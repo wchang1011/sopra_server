@@ -1,9 +1,11 @@
 package ch.uzh.ifi.hase.soprafs22.entity;
 
 import ch.uzh.ifi.hase.soprafs22.constant.UserStatus;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * Internal User Representation
@@ -25,17 +27,22 @@ public class User implements Serializable {
   @GeneratedValue
   private Long id;
 
-  @Column(nullable = false)
-  private String name;
-
   @Column(nullable = false, unique = true)
   private String username;
+
+  @Column(nullable = false)
+  private String password;
 
   @Column(nullable = false, unique = true)
   private String token;
 
   @Column(nullable = false)
   private UserStatus status;
+
+  @Temporal(TemporalType.TIMESTAMP)
+  @Column(nullable = false, updatable = false)
+  @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+  private Date createTime;
 
   public Long getId() {
     return id;
@@ -45,14 +52,6 @@ public class User implements Serializable {
     this.id = id;
   }
 
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
   public String getUsername() {
     return username;
   }
@@ -60,6 +59,10 @@ public class User implements Serializable {
   public void setUsername(String username) {
     this.username = username;
   }
+
+  public String getPassword() {return password;}
+
+  public void setPassword(String password) {this.password = password;}
 
   public String getToken() {
     return token;
@@ -76,4 +79,13 @@ public class User implements Serializable {
   public void setStatus(UserStatus status) {
     this.status = status;
   }
+
+  public Date getCreateTime() {
+        return createTime;
+    }
+
+  public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
 }

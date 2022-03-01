@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -40,8 +41,10 @@ public class UserService {
   }
 
   public User createUser(User newUser) {
+    Date createTime = new Date();
     newUser.setToken(UUID.randomUUID().toString());
     newUser.setStatus(UserStatus.OFFLINE);
+    newUser.setCreateTime(createTime);
 
     checkIfUserExists(newUser);
 
@@ -51,7 +54,37 @@ public class UserService {
     userRepository.flush();
 
     log.debug("Created Information for User: {}", newUser);
+    newUser.setStatus(UserStatus.ONLINE);
     return newUser;
+  }
+
+  public User loginUser(User inputUser) {
+    User userByUsername = checkIfUserRegistered(inputUser);
+
+    inputUser.setId(userByUsername.getId());
+    inputUser.setStatus(userByUsername.getStatus());
+    inputUser.setToken(userByUsername.getToken());
+    inputUser.setCreateTime(userByUsername.getCreateTime());
+
+    String password = inputUser.getPassword();
+    String dbPassword = userByUsername.getPassword();
+
+    String passwordErrorMessage = "Your password is incorrect.";
+
+    if(!password.equals(dbPassword)) {
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                String.format(passwordErrorMessage));
+    }else{
+        inputUser.setStatus(UserStatus.ONLINE);
+        return inputUser;
+    }
+  }
+
+  public User logoutUser(User inputUser, long id) {
+    inputUser.setId(id);
+    inputUser.setStatus(UserStatus.OFFLINE);
+
+    return inputUser;
   }
 
   /**
@@ -66,16 +99,22 @@ public class UserService {
    */
   private void checkIfUserExists(User userToBeCreated) {
     User userByUsername = userRepository.findByUsername(userToBeCreated.getUsername());
-    User userByName = userRepository.findByName(userToBeCreated.getName());
 
     String baseErrorMessage = "The %s provided %s not unique. Therefore, the user could not be created!";
-    if (userByUsername != null && userByName != null) {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-          String.format(baseErrorMessage, "username and the name", "are"));
-    } else if (userByUsername != null) {
+    if (userByUsername != null) {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format(baseErrorMessage, "username", "is"));
-    } else if (userByName != null) {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format(baseErrorMessage, "name", "is"));
     }
+  }
+
+
+  private User checkIfUserRegistered(User userToBeLoggedIn) {
+    User userByUsername = userRepository.findByUsername(userToBeLoggedIn.getUsername());
+
+    String baseErrorMessage = "The %s provided does not exist. Do you want to create a new user?";
+    if (userByUsername == null) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+              String.format(baseErrorMessage, "username"));
+    }
+    return userByUsername;
   }
 }
