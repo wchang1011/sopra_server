@@ -27,7 +27,7 @@ public class User implements Serializable {
   @GeneratedValue
   private Long id;
 
-  @Column(nullable = false, unique = true)
+  @Column(nullable = false, unique = true, updatable = true)
   private String username;
 
   @Column(nullable = false)
@@ -41,8 +41,12 @@ public class User implements Serializable {
 
   @Temporal(TemporalType.TIMESTAMP)
   @Column(nullable = false, updatable = false)
-  @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+  @JsonFormat(pattern = "yyyy-MM-dd")
   private Date createTime;
+
+  @Column(nullable = true, updatable = true)
+  @JsonFormat(pattern = "yyyy-MM-dd")
+  private Date birthDate;
 
   public Long getId() {
     return id;
@@ -86,6 +90,14 @@ public class User implements Serializable {
 
   public void setCreateTime(Date createTime) {
         this.createTime = createTime;
+    }
+
+    public Date getBirthDate() {
+        return birthDate;
+    }
+
+    public void setBirthDate(Date birthDate) {
+        this.birthDate = birthDate;
     }
 
 }

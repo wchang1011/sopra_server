@@ -43,6 +43,28 @@ public class UserController {
     return userGetDTOs;
   }
 
+    @GetMapping("/users/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public UserGetDTO getUser(@PathVariable long id) {
+        // fetch all users in the internal representation
+        System.out.println("id"+id);
+        User user = userService.getUser(id);
+        return DTOMapper.INSTANCE.convertEntityToUserGetDTO(user);
+    }
+
+    @PutMapping("/users/{id}/edit")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public UserGetDTO editUser(@RequestBody UserPostDTO userPostDTO, @PathVariable long id) {
+        // fetch all users in the internal representation
+        User userInput = DTOMapper.INSTANCE.convertUserPostDTOtoEntity(userPostDTO);
+
+        User updatedUser = userService.editUser(userInput, id);
+
+        return DTOMapper.INSTANCE.convertEntityToUserGetDTO(updatedUser);
+    }
+
   @PostMapping("/users/register")
   @ResponseStatus(HttpStatus.CREATED)
   @ResponseBody
@@ -69,15 +91,15 @@ public class UserController {
       return DTOMapper.INSTANCE.convertEntityToUserGetDTO(loggedInUser);
   }
 
-  @PutMapping("/users/logout:{id}")
-  @ResponseStatus(HttpStatus.OK)
-  @ResponseBody
-  public UserGetDTO logoutUser(@RequestBody UserPostDTO userPostDTO, @PathVariable long id) {
-      // convert API user to internal representation
-      User userInput = DTOMapper.INSTANCE.convertUserPostDTOtoEntity(userPostDTO);
-
-      User loggedInUser = userService.logoutUser(userInput, id);
-
-      return DTOMapper.INSTANCE.convertEntityToUserGetDTO(loggedInUser);
-  }
+//  @PutMapping("/users/logout:{id}")
+//  @ResponseStatus(HttpStatus.OK)
+//  @ResponseBody
+//  public UserGetDTO logoutUser(@RequestBody UserPostDTO userPostDTO, @PathVariable long id) {
+//      // convert API user to internal representation
+//      User userInput = DTOMapper.INSTANCE.convertUserPostDTOtoEntity(userPostDTO);
+//
+//      User loggedInUser = userService.logoutUser(userInput, id);
+//
+//      return DTOMapper.INSTANCE.convertEntityToUserGetDTO(loggedInUser);
+//  }
 }

@@ -40,6 +40,10 @@ public class UserService {
     return this.userRepository.findAll();
   }
 
+  public User getUser(long id) {
+    return this.userRepository.getById(id);
+  }
+
   public User createUser(User newUser) {
     Date createTime = new Date();
     newUser.setToken(UUID.randomUUID().toString());
@@ -61,11 +65,6 @@ public class UserService {
   public User loginUser(User inputUser) {
     User userByUsername = checkIfUserRegistered(inputUser);
 
-    inputUser.setId(userByUsername.getId());
-    inputUser.setStatus(userByUsername.getStatus());
-    inputUser.setToken(userByUsername.getToken());
-    inputUser.setCreateTime(userByUsername.getCreateTime());
-
     String password = inputUser.getPassword();
     String dbPassword = userByUsername.getPassword();
 
@@ -75,17 +74,28 @@ public class UserService {
         throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                 String.format(passwordErrorMessage));
     }else{
-        inputUser.setStatus(UserStatus.ONLINE);
-        return inputUser;
+        return userByUsername;
     }
   }
+//
+//  public User logoutUser(User inputUser, long id) {
+//    inputUser.setId(id);
+//    inputUser.setStatus(UserStatus.OFFLINE);
+//
+//    return inputUser;
+//  }
 
-  public User logoutUser(User inputUser, long id) {
-    inputUser.setId(id);
-    inputUser.setStatus(UserStatus.OFFLINE);
-
-    return inputUser;
-  }
+    public User editUser(User inputUser, long id) {
+      User userById = userRepository.getById(id);
+      if(inputUser.getBirthDate()!=null) {
+          userById.setUsername(inputUser.getUsername());
+          userById.setBirthDate(inputUser.getBirthDate());
+      }else{
+          userById.setUsername(inputUser.getUsername());
+      }
+      userById = userRepository.save(userById);
+      return userById;
+    }
 
   /**
    * This is a helper method that will check the uniqueness criteria of the
