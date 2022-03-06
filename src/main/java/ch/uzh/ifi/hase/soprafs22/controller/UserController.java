@@ -53,7 +53,7 @@ public class UserController {
         return DTOMapper.INSTANCE.convertEntityToUserGetDTO(user);
     }
 
-    @PutMapping("/users/{id}/edit")
+    @PutMapping("/users/{id}")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public UserGetDTO editUser(@RequestBody UserPostDTO userPostDTO, @PathVariable long id) {
