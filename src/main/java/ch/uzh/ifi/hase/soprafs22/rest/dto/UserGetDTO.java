@@ -10,7 +10,7 @@ public class UserGetDTO {
 //  private String password;
   private String username;
   private String token;
-  private UserStatus status;
+  private boolean status;
   private Date createTime;
   private Date birthDate;
 
@@ -45,11 +45,11 @@ public class UserGetDTO {
     this.username = username;
   }
 
-  public UserStatus getStatus() {
+  public boolean getStatus() {
     return status;
   }
 
-  public void setStatus(UserStatus status) {
+  public void setStatus(boolean status) {
     this.status = status;
   }
 

@@ -47,7 +47,7 @@ public class UserService {
   public User createUser(User newUser) {
     Date createTime = new Date();
     newUser.setToken(UUID.randomUUID().toString());
-    newUser.setStatus(UserStatus.OFFLINE);
+    newUser.setStatus(false);
     newUser.setCreateTime(createTime);
 
     checkIfUserExists(newUser);
@@ -58,7 +58,7 @@ public class UserService {
     userRepository.flush();
 
     log.debug("Created Information for User: {}", newUser);
-    newUser.setStatus(UserStatus.ONLINE);
+    newUser.setStatus(true);
     return newUser;
   }
 
@@ -74,14 +74,14 @@ public class UserService {
         throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                 String.format(passwordErrorMessage));
     }else{
-        userByUsername.setStatus(UserStatus.ONLINE);
+        userByUsername.setStatus(true);
         return userByUsername;
     }
   }
 
   public User logoutUser(long id) {
     User userById = userRepository.getById(id);
-    userById.setStatus(UserStatus.OFFLINE);
+    userById.setStatus(false);
 
     return userById;
   }

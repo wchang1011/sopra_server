@@ -37,7 +37,7 @@ public class User implements Serializable {
   private String token;
 
   @Column(nullable = false)
-  private UserStatus status;
+  private boolean status;
 
   @Temporal(TemporalType.TIMESTAMP)
   @Column(nullable = false, updatable = false)
@@ -76,11 +76,11 @@ public class User implements Serializable {
     this.token = token;
   }
 
-  public UserStatus getStatus() {
+  public boolean getStatus() {
     return status;
   }
 
-  public void setStatus(UserStatus status) {
+  public void setStatus(boolean status) {
     this.status = status;
   }
 
