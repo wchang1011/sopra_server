@@ -74,24 +74,30 @@ public class UserService {
         throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                 String.format(passwordErrorMessage));
     }else{
+        userByUsername.setStatus(UserStatus.ONLINE);
         return userByUsername;
     }
   }
-//
-//  public User logoutUser(User inputUser, long id) {
-//    inputUser.setId(id);
-//    inputUser.setStatus(UserStatus.OFFLINE);
-//
-//    return inputUser;
-//  }
+
+  public User logoutUser(long id) {
+    User userById = userRepository.getById(id);
+    userById.setStatus(UserStatus.OFFLINE);
+
+    return userById;
+  }
 
     public User editUser(User inputUser, long id) {
       User userById = userRepository.getById(id);
-      if(inputUser.getBirthDate()!=null) {
+
+      if(inputUser.getBirthDate()!=null & inputUser.getUsername()==null) {
+          userById.setBirthDate(inputUser.getBirthDate());
+      }else if(inputUser.getUsername()!=null & inputUser.getBirthDate()==null) {
+          checkIfNameUnique(inputUser);
+          userById.setUsername(inputUser.getUsername());
+      }else{
+          checkIfNameUnique(inputUser);
           userById.setUsername(inputUser.getUsername());
           userById.setBirthDate(inputUser.getBirthDate());
-      }else{
-          userById.setUsername(inputUser.getUsername());
       }
       userById = userRepository.save(userById);
       return userById;
@@ -116,7 +122,14 @@ public class UserService {
     }
   }
 
+  private void checkIfNameUnique(User userToBeEdited) {
+    User userByUsername = userRepository.findByUsername(userToBeEdited.getUsername());
 
+    String baseErrorMessage = "The %s provided %s not unique. Please choose a new username!";
+    if (userByUsername != null) {
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format(baseErrorMessage, "username", "is"));
+    }
+  }
   private User checkIfUserRegistered(User userToBeLoggedIn) {
     User userByUsername = userRepository.findByUsername(userToBeLoggedIn.getUsername());
 

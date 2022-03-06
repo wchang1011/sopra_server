@@ -65,6 +65,17 @@ public class UserController {
         return DTOMapper.INSTANCE.convertEntityToUserGetDTO(updatedUser);
     }
 
+  @PutMapping("/users/{id}/logout")
+  @ResponseStatus(HttpStatus.OK)
+  @ResponseBody
+  public UserGetDTO logoutUser(@PathVariable long id) {
+      // convert API user to internal representation
+
+      User loggedOutUser = userService.logoutUser(id);
+
+      return DTOMapper.INSTANCE.convertEntityToUserGetDTO(loggedOutUser);
+  }
+
   @PostMapping("/users/register")
   @ResponseStatus(HttpStatus.CREATED)
   @ResponseBody
@@ -90,16 +101,4 @@ public class UserController {
 
       return DTOMapper.INSTANCE.convertEntityToUserGetDTO(loggedInUser);
   }
-
-//  @PutMapping("/users/logout:{id}")
-//  @ResponseStatus(HttpStatus.OK)
-//  @ResponseBody
-//  public UserGetDTO logoutUser(@RequestBody UserPostDTO userPostDTO, @PathVariable long id) {
-//      // convert API user to internal representation
-//      User userInput = DTOMapper.INSTANCE.convertUserPostDTOtoEntity(userPostDTO);
-//
-//      User loggedInUser = userService.logoutUser(userInput, id);
-//
-//      return DTOMapper.INSTANCE.convertEntityToUserGetDTO(loggedInUser);
-//  }
 }
