@@ -49,7 +49,7 @@ public class UserControllerTest {
     User user = new User();
     user.setPassword("Password");
     user.setUsername("firstname@lastname");
-    user.setStatus(UserStatus.OFFLINE);
+    user.setStatus(false);
 
     List<User> allUsers = Collections.singletonList(user);
 
@@ -65,7 +65,7 @@ public class UserControllerTest {
         .andExpect(jsonPath("$", hasSize(1)))
         .andExpect(jsonPath("$[0].password", is(user.getPassword())))
         .andExpect(jsonPath("$[0].username", is(user.getUsername())))
-        .andExpect(jsonPath("$[0].status", is(user.getStatus().toString())));
+        .andExpect(jsonPath("$[0].status", is(user.getStatus())));
   }
 
   @Test
@@ -76,7 +76,7 @@ public class UserControllerTest {
     user.setPassword("password");
     user.setUsername("testUsername");
     user.setToken("1");
-    user.setStatus(UserStatus.ONLINE);
+    user.setStatus(true);
 
     UserPostDTO userPostDTO = new UserPostDTO();
     userPostDTO.setPassword("password");
@@ -95,7 +95,7 @@ public class UserControllerTest {
         .andExpect(jsonPath("$.id", is(user.getId().intValue())))
         .andExpect(jsonPath("$.name", is(user.getPassword())))
         .andExpect(jsonPath("$.username", is(user.getUsername())))
-        .andExpect(jsonPath("$.status", is(user.getStatus().toString())));
+        .andExpect(jsonPath("$.status", is(user.getStatus())));
   }
 
   /**

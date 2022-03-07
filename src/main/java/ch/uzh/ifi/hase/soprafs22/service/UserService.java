@@ -41,7 +41,8 @@ public class UserService {
   }
 
   public User getUser(long id) {
-    return this.userRepository.getById(id);
+      User userById = checkIfUserIdExist(id);
+      return userById;
   }
 
   public User createUser(User newUser) {
@@ -86,21 +87,22 @@ public class UserService {
     return userById;
   }
 
-    public User editUser(User inputUser, long id) {
-      User userById = userRepository.getById(id);
+  public User editUser(User inputUser, long id) {
 
-      if(inputUser.getBirthDate()!=null & inputUser.getUsername()==null) {
+    User userById = checkIfUserIdExist(id);
+
+    if(inputUser.getBirthDate()!=null & inputUser.getUsername()==null) {
           userById.setBirthDate(inputUser.getBirthDate());
-      }else if(inputUser.getUsername()!=null & inputUser.getBirthDate()==null) {
-          checkIfNameUnique(inputUser);
-          userById.setUsername(inputUser.getUsername());
+    }else if(inputUser.getUsername()!=null & inputUser.getBirthDate()==null) {
+        checkIfNameUnique(inputUser);
+         userById.setUsername(inputUser.getUsername());
       }else{
-          checkIfNameUnique(inputUser);
-          userById.setUsername(inputUser.getUsername());
-          userById.setBirthDate(inputUser.getBirthDate());
-      }
-      userById = userRepository.save(userById);
-      return userById;
+         checkIfNameUnique(inputUser);
+         userById.setUsername(inputUser.getUsername());
+         userById.setBirthDate(inputUser.getBirthDate());
+     }
+     userById = userRepository.save(userById);
+     return userById;
     }
 
   /**
@@ -118,7 +120,7 @@ public class UserService {
 
     String baseErrorMessage = "The %s provided %s not unique. Therefore, the user could not be created!";
     if (userByUsername != null) {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format(baseErrorMessage, "username", "is"));
+      throw new ResponseStatusException(HttpStatus.CONFLICT, String.format(baseErrorMessage, "username", "is"));
     }
   }
 
@@ -127,7 +129,7 @@ public class UserService {
 
     String baseErrorMessage = "The %s provided %s not unique. Please choose a new username!";
     if (userByUsername != null) {
-        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format(baseErrorMessage, "username", "is"));
+        throw new ResponseStatusException(HttpStatus.CONFLICT, String.format(baseErrorMessage, "username", "is"));
     }
   }
   private User checkIfUserRegistered(User userToBeLoggedIn) {
@@ -135,9 +137,19 @@ public class UserService {
 
     String baseErrorMessage = "The %s provided does not exist. Do you want to create a new user?";
     if (userByUsername == null) {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND,
               String.format(baseErrorMessage, "username"));
     }
     return userByUsername;
+  }
+
+  private User checkIfUserIdExist(long id) {
+      User userById = userRepository.getById(id);
+
+      String baseErrorMessage = "The user with id: %s not found!";
+      if (userById == null) {
+          throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format(baseErrorMessage, id));
+      }
+      return userById;
   }
 }
