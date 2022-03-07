@@ -47,8 +47,10 @@ public class UserControllerTest {
   public void givenUsers_whenGetUsers_thenReturnJsonArray() throws Exception {
     // given
     User user = new User();
-    user.setPassword("Password");
+
+    user.setId(1L);
     user.setUsername("firstname@lastname");
+    user.setPassword("Password");
     user.setStatus(false);
 
     List<User> allUsers = Collections.singletonList(user);
@@ -63,9 +65,12 @@ public class UserControllerTest {
     // then
     mockMvc.perform(getRequest).andExpect(status().isOk())
         .andExpect(jsonPath("$", hasSize(1)))
-        .andExpect(jsonPath("$[0].password", is(user.getPassword())))
+        .andExpect(jsonPath("$[0].id", is(user.getId().intValue())))
         .andExpect(jsonPath("$[0].username", is(user.getUsername())))
-        .andExpect(jsonPath("$[0].status", is(user.getStatus())));
+        .andExpect(jsonPath("$[0].token", is(user.getToken())))
+        .andExpect(jsonPath("$[0].status", is(user.getStatus())))
+        .andExpect(jsonPath("$[0].createTime", is(user.getCreateTime())))
+        .andExpect(jsonPath("$[0].birthDate", is(user.getBirthDate())));
   }
 
   @Test
@@ -93,9 +98,12 @@ public class UserControllerTest {
     mockMvc.perform(postRequest)
         .andExpect(status().isCreated())
         .andExpect(jsonPath("$.id", is(user.getId().intValue())))
-        .andExpect(jsonPath("$.name", is(user.getPassword())))
         .andExpect(jsonPath("$.username", is(user.getUsername())))
-        .andExpect(jsonPath("$.status", is(user.getStatus())));
+        .andExpect(jsonPath("$.token", is(user.getToken())))
+        .andExpect(jsonPath("$.status", is(user.getStatus())))
+        .andExpect(jsonPath("$.createTime", is(user.getCreateTime())))
+        .andExpect(jsonPath("$.birthDate", is(user.getBirthDate())));
+
   }
 
   /**
