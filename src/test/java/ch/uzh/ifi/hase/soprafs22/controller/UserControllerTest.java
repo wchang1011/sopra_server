@@ -151,7 +151,7 @@ public class UserControllerTest {
     try {
       return new ObjectMapper().writeValueAsString(object);
     } catch (JsonProcessingException e) {
-      throw new ResponseStatusException(HttpStatus.CONFLICT,
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
           String.format("The request body could not be created.%s", e.toString()));
     }
   }
