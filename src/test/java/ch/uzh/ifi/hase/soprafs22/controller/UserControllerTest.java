@@ -106,6 +106,39 @@ public class UserControllerTest {
 
   }
 
+  @Test
+  public void givenUser_whenGetUser_thenReturnJsonArray() throws Exception {
+        // given
+        User user = new User();
+
+        user.setId(1L);
+        user.setUsername("firstname@lastname");
+        user.setPassword("Password");
+        user.setToken("1");
+        user.setStatus(false);
+
+
+        // this mocks the UserService -> we define above what the userService should
+        // return when getUsers() is called
+        given(userService.getUser(user.getId())).willReturn(user);
+
+        // when
+        MockHttpServletRequestBuilder getRequest = get("/users/"+user.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(user));
+
+        // then
+        mockMvc.perform(getRequest).andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(user.getId().intValue())))
+                .andExpect(jsonPath("$.username", is(user.getUsername())))
+                .andExpect(jsonPath("$.token", is(user.getToken())))
+                .andExpect(jsonPath("$.status", is(user.getStatus())))
+                .andExpect(jsonPath("$.createTime", is(user.getCreateTime())))
+                .andExpect(jsonPath("$.birthDate", is(user.getBirthDate())));
+    }
+
+
+
   /**
    * Helper Method to convert userPostDTO into a JSON string such that the input
    * can be processed
@@ -118,8 +151,17 @@ public class UserControllerTest {
     try {
       return new ObjectMapper().writeValueAsString(object);
     } catch (JsonProcessingException e) {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+      throw new ResponseStatusException(HttpStatus.CONFLICT,
           String.format("The request body could not be created.%s", e.toString()));
+    }
+  }
+
+  private String asJsonStringById(final Object object) {
+    try {
+        return new ObjectMapper().writeValueAsString(object);
+    } catch (JsonProcessingException e) {
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                String.format("The request body could not be found.%s", e.toString()));
     }
   }
 }
