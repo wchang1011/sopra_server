@@ -155,13 +155,4 @@ public class UserControllerTest {
           String.format("The request body could not be created.%s", e.toString()));
     }
   }
-
-  private String asJsonStringById(final Object object) {
-    try {
-        return new ObjectMapper().writeValueAsString(object);
-    } catch (JsonProcessingException e) {
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-                String.format("The request body could not be found.%s", e.toString()));
-    }
-  }
 }
