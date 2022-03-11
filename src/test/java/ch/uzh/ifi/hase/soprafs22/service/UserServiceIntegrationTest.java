@@ -5,6 +5,7 @@ import ch.uzh.ifi.hase.soprafs22.entity.User;
 import ch.uzh.ifi.hase.soprafs22.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -71,6 +72,33 @@ public class UserServiceIntegrationTest {
     testUser2.setUsername("testUsername");
 
     // check that an error is thrown
-    assertThrows(ResponseStatusException.class, () -> userService.createUser(testUser2));
+    ResponseStatusException ex = assertThrows(ResponseStatusException.class, () -> userService.createUser(testUser2));
+    assertEquals(HttpStatus.CONFLICT, ex.getStatus());
   }
+
+  @Test
+  public void loginUser_validInputs_success() {
+    // given
+    assertNull(userRepository.findByUsername("testUsername"));
+
+    User testUser = new User();
+    testUser.setPassword("testPassword");
+    testUser.setUsername("testUsername");
+
+    // when
+    User createdUser = userService.createUser(testUser);
+
+    User inputUser = new User();
+    inputUser.setUsername("testUsername");
+    inputUser.setPassword("testPassword");
+    User loginUser = userService.loginUser(inputUser);
+
+    // then
+    assertEquals(createdUser.getId(), loginUser.getId());
+    assertEquals(createdUser.getPassword(), loginUser.getPassword());
+    assertEquals(createdUser.getUsername(), loginUser.getUsername());
+    assertNotNull(loginUser.getToken());
+    assertEquals(true, loginUser.getStatus());
+  }
+
 }
