@@ -40,6 +40,7 @@ public class UserService {
     return this.userRepository.findAll();
   }
 
+  // get user by id
   public User getUser(long id) {
       User userById = checkIfUserIdExist(id);
       return userById;
@@ -63,7 +64,9 @@ public class UserService {
     return newUser;
   }
 
+  // login user with username and password as input
   public User loginUser(User inputUser) {
+    // if username not found, then throw user not registered exception message
     User userByUsername = checkIfUserRegistered(inputUser);
 
     String password = inputUser.getPassword();
@@ -80,6 +83,7 @@ public class UserService {
     }
   }
 
+  // find user by id and change user logged_in to false
   public User logoutUser(long id) {
     User userById = userRepository.getById(id);
     userById.setStatus(false);
@@ -87,6 +91,7 @@ public class UserService {
     return userById;
   }
 
+  // find user by id and update username and birthdate
   public User editUser(User inputUser, long id) {
 
     User userById = checkIfUserIdExist(id);
@@ -124,6 +129,7 @@ public class UserService {
     }
   }
 
+  // for register, check if username conflict
   private void checkIfNameUnique(User userToBeEdited) {
     User userByUsername = userRepository.findByUsername(userToBeEdited.getUsername());
 
@@ -132,6 +138,8 @@ public class UserService {
         throw new ResponseStatusException(HttpStatus.CONFLICT, String.format(baseErrorMessage, "username", "is"));
     }
   }
+
+  // check is user registered by username
   private User checkIfUserRegistered(User userToBeLoggedIn) {
     User userByUsername = userRepository.findByUsername(userToBeLoggedIn.getUsername());
 
@@ -143,6 +151,7 @@ public class UserService {
     return userByUsername;
   }
 
+  //check is user exist by id
   private User checkIfUserIdExist(long id) {
       User userById = userRepository.getById(id);
 

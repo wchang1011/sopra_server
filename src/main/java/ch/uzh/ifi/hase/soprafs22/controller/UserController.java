@@ -28,6 +28,7 @@ public class UserController {
     this.userService = userService;
   }
 
+  //create user
     @PostMapping("/users")
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
@@ -42,6 +43,7 @@ public class UserController {
         return DTOMapper.INSTANCE.convertEntityToUserGetDTO(createdUser);
     }
 
+    // login user
     @PostMapping("/login")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
@@ -54,7 +56,7 @@ public class UserController {
         return DTOMapper.INSTANCE.convertEntityToUserGetDTO(loggedInUser);
     }
 
-
+  //get all users
   @GetMapping("/users")
   @ResponseStatus(HttpStatus.OK)
   @ResponseBody
@@ -70,6 +72,7 @@ public class UserController {
     return userGetDTOs;
   }
 
+  //get user by id
     @GetMapping("/users/{id}")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
@@ -80,6 +83,7 @@ public class UserController {
         return DTOMapper.INSTANCE.convertEntityToUserGetDTO(user);
     }
 
+    //edit user by id
     @PutMapping("/users/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @ResponseBody
@@ -92,6 +96,7 @@ public class UserController {
         return DTOMapper.INSTANCE.convertEntityToUserGetDTO(updatedUser);
     }
 
+    //logout user by id
   @PutMapping("/logout/{id}")
   @ResponseStatus(HttpStatus.OK)
   @ResponseBody
