@@ -67,6 +67,47 @@ public class UserServiceTest {
     assertThrows(ResponseStatusException.class, () -> userService.createUser(testUser));
   }
 
+  @Test
+  public void getUserbyId_validInputs_success() {
+    // when -> any object is being save in the userRepository -> return the dummy
+    // testUser
 
+    Mockito.when(userRepository.getById(Mockito.any())).thenReturn(testUser);
+    User gotUser = userService.getUser(1L);
+
+    assertEquals(testUser.getId(), gotUser.getId());
+    assertEquals(testUser.getPassword(), gotUser.getPassword());
+    assertEquals(testUser.getUsername(), gotUser.getUsername());
+  }
+
+  @Test
+  public void getUserbyId_IdNotFound_throwsException() {
+      // given -> a first user has already been created
+      // then -> attempt to create second user with same user -> check that an error
+      // is thrown
+      assertThrows(ResponseStatusException.class, () -> userService.getUser(2L));
+  }
+
+  @Test
+  public void updateUserbyId_validInputs_success() {
+    // when -> any object is being save in the userRepository -> return the dummy
+    // testUser
+
+    Mockito.when(userRepository.getById(Mockito.any())).thenReturn(testUser);
+    User inputUser = new User();
+    inputUser.setUsername("newUsername");
+
+    User gotUser = userService.editUser(inputUser, 1L);
+
+    assertEquals(testUser.getId(), gotUser.getId());
+    assertEquals(testUser.getUsername(), gotUser.getUsername());
+  }
+
+  @Test
+  public void updateUserbyId_IdNotFound_throwsException() {
+      User inputUser = new User();
+      inputUser.setUsername("newUsername");
+      assertThrows(ResponseStatusException.class, () -> userService.editUser(inputUser, 2L));
+  }
 
 }
